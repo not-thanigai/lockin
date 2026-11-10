@@ -2,7 +2,7 @@
 
 - Date: 2026-11-10
 - Branch: `codex/phase01-quality`
-- Build identifier: Android debug build / Maestro flow pending in GitHub Actions.
+- Build identifier: current branch head after `6d415b5`; Android debug build / Maestro flow pending in GitHub Actions.
 - Final status: Partial; no successful Maestro run has been recorded yet.
 
 ## Local verification
@@ -24,7 +24,10 @@
 - Quality run 2 passed after React DOM was aligned to React 19.
 - Emulator run 2 was cancelled after the PR head advanced.
 - Emulator run 3 booted API 35 and completed Expo prebuild, but failed before the Gradle build because the runner could not resolve `./gradlew` from the script working directory. No APK or UI test was produced.
-- The workflow has been changed to anchor to `$GITHUB_WORKSPACE`, verify the wrapper exists, invoke it from `android/` through Bash, install Maestro, run `maestro/foundation-smoke.yaml`, and upload JUnit/debug/screenshot/log/APK artifacts.
+- Emulator run 4 booted API 35 and failed when `android-emulator-runner` passed each configured script line to a separate `sh -c`, splitting a multiline function declaration.
+- Emulator run 5 used a standalone Bash script but remained in its combined build/install/Maestro step for more than 17 minutes. The run was cancelled when the branch advanced; live logs were unavailable and no artifact was produced, so the cause is unknown.
+- Emulator run 6 failed at `setup-java` because Expo had not generated the Gradle project before the Gradle cache key was computed.
+- Commit `6d415b5` builds the APK in its own timed step before emulator startup, enables Gradle caching, adds clear phase markers and bounded download/install/Maestro commands, and uploads build/install/run logs alongside the APK and emulator evidence. Java setup now occurs after Expo prebuild; run 7 will verify this sequence.
 
 ## What the current Maestro flow covers
 
@@ -32,4 +35,4 @@ Clean app launch, tab navigation, food search, amount entry, food logging, dashb
 
 ## Remaining verification
 
-Inspect the next Android workflow run. Only mark this flow passed after the workflow succeeds and its JUnit output, screenshot, runtime logs, and APK artifact have been reviewed. Physical-device usability remains untested.
+Inspect Android workflow run 7. Only mark this flow passed after the workflow succeeds and its JUnit output, screenshot, runtime logs, and APK artifact have been reviewed. Physical-device usability remains untested.
