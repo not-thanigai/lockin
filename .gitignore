@@ -7,3 +7,4 @@ web-build/
 *.jks
 .env*
 coverage/
+android/

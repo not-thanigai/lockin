@@ -1,4 +1,53 @@
-import{useEffect,useState}from'react';import{Alert,ScrollView,Text,TextInput,Pressable,View}from'react-native';import{useRouter}from'expo-router';import{Action,Card,Screen,Title}from'../src/components';import{database}from'../src/database';import{COLORS}from'../src/theme';
-const fields:[string,string][]=[['age','Age'],['height_cm','Height (cm)'],['weight_kg','Starting weight (kg)'],['target_weight_kg','Target weight (kg)'],['calorie_target','Daily calories'],['protein_target','Protein target (g)'],['carbs_target','Carbohydrate target (g)'],['fat_target','Fat target (g)'],['steps_target','Daily steps'],['water_target_ml','Daily water (ml)']];
-export default function Settings(){const router=useRouter();const[v,setV]=useState<Record<string,string>>({});useEffect(()=>{database().then(async d=>{const p=await d.getFirstAsync<any>('SELECT * FROM profile WHERE id=1');setV(Object.fromEntries(fields.map(([k])=>[k,String(p[k])])));});},[]);async function save(){for(const[k,label]of fields){const n=Number(v[k]);if(!Number.isFinite(n)||n<=0){Alert.alert('Check '+label,'Enter a value greater than zero.');return;}}const d=await database();await d.runAsync('UPDATE profile SET age=?,height_cm=?,weight_kg=?,target_weight_kg=?,calorie_target=?,protein_target=?,carbs_target=?,fat_target=?,steps_target=?,water_target_ml=? WHERE id=1',fields.map(([k])=>Number(v[k])));Alert.alert('Saved','Your targets are updated locally.');}
-return <Screen><Pressable onPress={()=>router.back()}><Text style={{color:COLORS.green,marginBottom:12}}>‹ Back</Text></Pressable><Title eyebrow="PREFERENCES" title="Profile & targets" subtitle="Personal starting values and daily goals. Stored on this device."/><ScrollView keyboardShouldPersistTaps="handled">{fields.map(([key,label])=><Card key={key} style={{paddingVertical:11,marginBottom:8}}><Text style={{color:COLORS.muted,fontSize:12,marginBottom:7}}>{label}</Text><TextInput value={v[key]??''} onChangeText={x=>setV(s=>({...s,[key]:x}))} keyboardType="decimal-pad" style={{color:COLORS.text,fontSize:16,paddingVertical:4}}/></Card>)}<View style={{marginTop:4,marginBottom:24}}><Action label="Save profile and targets" onPress={save}/></View></ScrollView></Screen>}
+import { useEffect, useState } from 'react';
+import { ScrollView, Text, TextInput, Pressable, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Action, Card, Screen, Title } from '../src/components';
+import { getProfile, updateTargets } from '../src/repositories/profileRepository';
+import type { EditableTargets } from '../src/repositories/profileRepository';
+import type { Profile } from '../src/models';
+import { COLORS } from '../src/theme';
+
+const fields: { key: keyof EditableTargets; label: string }[] = [
+  { key: 'age', label: 'Age' }, { key: 'height_cm', label: 'Height (cm)' },
+  { key: 'weight_kg', label: 'Starting weight (kg)' }, { key: 'target_weight_kg', label: 'Target weight (kg)' },
+  { key: 'calorie_target', label: 'Daily calories' }, { key: 'protein_target', label: 'Protein target (g)' },
+  { key: 'carbs_target', label: 'Carbohydrate target (g)' }, { key: 'fat_target', label: 'Fat target (g)' },
+  { key: 'steps_target', label: 'Daily steps' }, { key: 'water_target_ml', label: 'Daily water (ml)' },
+];
+
+type TargetInputs = Record<keyof EditableTargets, string>;
+
+function toInputs(profile: Profile): TargetInputs {
+  return Object.fromEntries(fields.map(({ key }) => [key, String(profile[key])])) as TargetInputs;
+}
+
+export default function Settings() {
+  const router = useRouter();
+  const [inputs, setInputs] = useState<TargetInputs | null>(null);
+  const [error, setError] = useState('');
+
+  useEffect(() => { void getProfile().then(profile => setInputs(toInputs(profile))).catch(() => setError('Could not load your profile.')); }, []);
+
+  async function save() {
+    if (!inputs) return;
+    const values = Object.fromEntries(fields.map(({ key }) => [key, Number(inputs[key])])) as EditableTargets;
+    if (fields.some(({ key }) => !Number.isFinite(values[key]) || values[key] <= 0)) { setError('Every value must be greater than zero.'); return; }
+    try {
+      await updateTargets(values);
+      setError('');
+      router.back();
+    } catch {
+      setError('Your profile could not be saved. Your values are still available to retry.');
+    }
+  }
+
+  return <Screen><Pressable onPress={() => router.back()}><Text style={{ color: COLORS.green, marginBottom: 12 }}>‹ Back</Text></Pressable>
+    <Title eyebrow="Preferences" title="Profile & targets" subtitle="Personal starting values and daily goals. Stored on this device." />
+    <ScrollView keyboardShouldPersistTaps="handled">{fields.map(({ key, label }) => <Card key={key} style={{ paddingVertical: 11, marginBottom: 8 }}>
+      <Text style={{ color: COLORS.muted, fontSize: 12, marginBottom: 7 }}>{label}</Text>
+      <TextInput value={inputs?.[key] ?? ''} onChangeText={value => setInputs(current => current ? ({ ...current, [key]: value }) : current)} keyboardType="decimal-pad" style={{ color: COLORS.text, fontSize: 16, paddingVertical: 4 }} />
+    </Card>)}
+    {error ? <Text accessibilityRole="alert" style={{ color: COLORS.red, marginBottom: 10 }}>{error}</Text> : null}
+    <View style={{ marginTop: 4, marginBottom: 24 }}><Action label="Save profile and targets" onPress={save} /></View>
+  </ScrollView></Screen>;
+}

@@ -1,31 +1,105 @@
+<div align="center">
+
 # LOCKIN
 
-**Discipline. Consistency. Results.**
+### Build better habits. Track what matters.
 
-LOCKIN is an Android-first, local-first fitness and nutrition tracker built with Expo, React Native, TypeScript, Expo Router, and SQLite. The current working slice provides a dark dashboard, editable personal targets, food search and logging (including historical dates and explicit raw/cooked states), custom foods, hydration, manual steps and workout logs, weight history, and a lightweight grocery inventory / task list.
+An Android-first fitness and nutrition tracker built around private, on-device data.
 
-## Requirements
+[![Quality](https://github.com/not-thanigai/lockin/actions/workflows/quality.yml/badge.svg)](https://github.com/not-thanigai/lockin/actions/workflows/quality.yml)
+[![Android smoke](https://github.com/not-thanigai/lockin/actions/workflows/android-smoke.yml/badge.svg)](https://github.com/not-thanigai/lockin/actions/workflows/android-smoke.yml)
+[![Expo SDK](https://img.shields.io/badge/Expo%20SDK-58-000020?logo=expo)](https://expo.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
-- Node.js 22.13 or newer (the current Expo SDK requirement).
-- npm.
-- Android Studio with Android SDK / emulator for native builds.
-- A development build for testing native integrations.
+</div>
 
-## Run
+> **Early development:** LOCKIN is an active foundation build, not a release-ready app. No APK is published yet. See [current status](docs/STATUS.md) for what works and what remains.
 
-```sh
-npm install
-npm run typecheck
-npm test
+## What it does today
+
+The current app is a local-first foundation for everyday tracking:
+
+- **Today** — calorie and macro totals, hydration, and activity at a glance.
+- **Food** — search and log foods by grams, record historical entries, and add custom foods.
+- **Activity** — track water, steps, workouts, and body weight manually.
+- **Prep** — keep a lightweight inventory and preparation task list.
+- **Progress** — review weight history and personal targets.
+
+Data is stored locally in SQLite. Food entries keep a nutrition snapshot, and days without logs stay untracked rather than being treated as zero-intake days. Seed nutrition values are estimates marked as unverified; check labels and preparation details before relying on them.
+
+## Built with
+
+| Layer | Technology |
+| --- | --- |
+| App | React Native, Expo SDK 58, Expo Router |
+| Language | TypeScript with strict checks |
+| Local storage | SQLite via `expo-sqlite` |
+| Tests | Jest, React Native Testing Library, Maestro |
+| CI | GitHub Actions with an Android emulator workflow |
+
+## Get started
+
+### Requirements
+
+- Node.js **22.13.1** (see [`.nvmrc`](.nvmrc)) and npm
+- Android Studio with Android SDK and an emulator for native Android builds
+- Java 21 for the Android Gradle build
+
+### Install and run
+
+```bash
+git clone https://github.com/not-thanigai/lockin.git
+cd lockin
+npm ci
 npm start
 ```
 
-For Android, install the SDK and set `ANDROID_HOME`, then run `npm run android`. This generates the native Android project and installs it on a connected device or emulator. `npm run android` is not available in an environment without the Android SDK.
+To build and launch on a connected Android device or emulator:
 
-## Local data
+```bash
+npm run android
+```
 
-SQLite stores profile values, food reference entries, food logs with nutrition snapshots, water, activity, workouts, tasks, and inventory. Dates are stored using the device's local calendar date alongside UTC timestamps. Days without entries remain untracked; they are never counted as zero-calorie days. Reference nutrition values are estimates and carry an unverified source label in the database. Check food labels and preparation state before relying on an entry.
+The Android SDK must be installed and configured for this command. Native builds and emulator launches have not yet been verified from the local development environment; CI is configured to perform an Android emulator smoke run on relevant pull requests and pushes to `main`.
 
-## Current status
+## Quality checks
 
-See [`docs/STATUS.md`](docs/STATUS.md) for completed work, tested behavior, unimplemented integrations, and environment limits. This repository is a working foundation; it does not yet meet the full LOCKIN master prompt's definition of done. No APK has been generated.
+Run the same core checks locally before opening a pull request:
+
+```bash
+npm run typecheck
+npm run lint
+npm test -- --ci
+```
+
+Exporting the JavaScript bundle is useful for catching bundling problems, but it does **not** produce or verify an APK:
+
+```bash
+npx expo export --platform android
+```
+
+See [testing and verification](docs/TESTING.md) and the [latest test report](docs/testing/reports/2026-11-10-human-ui-implementation.md) for exact results and known gaps.
+
+## Roadmap
+
+The next milestones include premium first-launch onboarding, Google Credential Manager sign-in, richer nutrition and recipe workflows, workout sessions, progress history, hydration reminders, and secure backup/restore. These are planned work and are **not** represented as implemented features.
+
+Follow progress in the [engineering status](docs/STATUS.md), [roadmap](ROADMAP.md), and [task queue](TASKS.md).
+
+## Project notes
+
+- [Architecture](docs/ARCHITECTURE.md)
+- [Database and local data](docs/DATABASE.md)
+- [Integrations and setup](docs/INTEGRATIONS.md)
+- [Testing strategy](docs/TESTING.md)
+- [Known technical debt](docs/TECH_DEBT.md)
+- [Codex / OpenCode contribution workflow](docs/workflows/coordination.md)
+- [Full product specification](MASTER_SPEC.md)
+
+## Contributing
+
+Work from a task in [`TASKS.md`](TASKS.md), use a focused `codex/` or `opencode/` feature branch, and open a pull request against `main`. Include the checks you ran and any limitations in the PR description. See the [shared workflow](docs/workflows/coordination.md) and [pull request template](.github/PULL_REQUEST_TEMPLATE.md) before starting.
+
+## License
+
+No license has been added yet. Until one is chosen, all rights remain with the copyright holder; please do not assume the code is available for reuse.

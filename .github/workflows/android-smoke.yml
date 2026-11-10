@@ -1,0 +1,90 @@
+name: Android emulator smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "app/**"
+      - "src/**"
+      - "maestro/**"
+      - "package.json"
+      - "package-lock.json"
+      - "app.json"
+      - "babel.config.js"
+      - "tsconfig.json"
+      - ".github/workflows/android-smoke.yml"
+  pull_request:
+    paths:
+      - "app/**"
+      - "src/**"
+      - "maestro/**"
+      - "package.json"
+      - "package-lock.json"
+      - "app.json"
+      - "babel.config.js"
+      - "tsconfig.json"
+      - ".github/workflows/android-smoke.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-smoke-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  emulator-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Generate Android project
+        run: npx expo prebuild --platform android --no-install
+        env:
+          EXPO_NO_TELEMETRY: "1"
+          CI: "1"
+      - name: Verify generated Gradle wrapper
+        run: test -f android/gradlew
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+      - name: Build Android debug APK
+        timeout-minutes: 30
+        run: |
+          echo "Building the Android debug APK."
+          cd android
+          bash ./gradlew assembleDebug --console=plain --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/gradle-build.log"
+      - name: Build, install, and run Maestro UI smoke flow
+        uses: reactivecircus/android-emulator-runner@v2
+        timeout-minutes: 30
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_6
+          emulator-boot-timeout: 900
+          working-directory: .
+          script: bash .github/scripts/android-smoke.sh
+      - name: Upload emulator evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-smoke-${{ github.run_id }}
+          path: |
+            android-smoke-log.txt
+            android-smoke.png
+            gradle-build.log
+            maestro-install.log
+            maestro-run.log
+            android/app/build/outputs/apk/debug/app-debug.apk
+            maestro-test-results.xml
+            maestro-output/**
+            maestro-debug/**
+          if-no-files-found: warn
