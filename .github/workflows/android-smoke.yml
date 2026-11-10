@@ -1,0 +1,81 @@
+name: Android emulator smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "app/**"
+      - "src/**"
+      - "package.json"
+      - "package-lock.json"
+      - "app.json"
+      - "babel.config.js"
+      - "tsconfig.json"
+      - ".github/workflows/android-smoke.yml"
+  pull_request:
+    paths:
+      - "app/**"
+      - "src/**"
+      - "package.json"
+      - "package-lock.json"
+      - "app.json"
+      - "babel.config.js"
+      - "tsconfig.json"
+      - ".github/workflows/android-smoke.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-smoke-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  emulator-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - run: npm ci
+      - name: Generate Android project
+        run: npx expo prebuild --platform android --no-install
+        env:
+          EXPO_NO_TELEMETRY: "1"
+          CI: "1"
+      - name: Build, install, launch and capture
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_6
+          script: |
+            set -euo pipefail
+            cd android
+            ./gradlew assembleDebug
+            adb install app/build/outputs/apk/debug/app-debug.apk
+            adb shell am start -n com.lockin.fitness/.MainActivity
+            sleep 10
+            adb shell pidof com.lockin.fitness
+            adb logcat -d -s AndroidRuntime:E ReactNativeJS:E > ../android-smoke-log.txt
+            if grep -E "FATAL EXCEPTION|ReactNativeJS:.*(Error|Exception)" ../android-smoke-log.txt; then
+              exit 1
+            fi
+            adb exec-out screencap -p > ../android-smoke.png
+      - name: Upload emulator evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-smoke-${{ github.run_id }}
+          path: |
+            android-smoke-log.txt
+            android-smoke.png
+            android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: warn

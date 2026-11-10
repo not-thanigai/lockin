@@ -1,0 +1,73 @@
+name: Development task
+description: Track a small, independently executable LOCKIN task
+title: "[TASK] "
+labels: ["task"]
+body:
+  - type: input
+    id: task_id
+    attributes:
+      label: Task ID
+      description: Use the stable ID from TASKS.md, or assign the next ID.
+      placeholder: NUT-001
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options: ["P0 - Critical", "P1 - High", "P2 - Medium", "P3 - Low"]
+    validations:
+      required: true
+  - type: input
+    id: phase
+    attributes:
+      label: Phase
+      placeholder: Nutrition and food logging
+    validations:
+      required: true
+  - type: input
+    id: owner
+    attributes:
+      label: Owner
+      description: One owner only: Codex, OpenCode, or a named human.
+    validations:
+      required: true
+  - type: input
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: Task IDs / issue URLs, or None.
+    validations:
+      required: true
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: Complexity
+      options: ["S", "M", "L"]
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description and expected deliverables
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Observable outcomes and edge cases.
+    validations:
+      required: true
+  - type: textarea
+    id: testing
+    attributes:
+      label: Testing requirements
+      description: Unit, database, Android, emulator, Maestro, or manual requirements.
+    validations:
+      required: true
+  - type: input
+    id: modules
+    attributes:
+      label: Relevant modules
+      placeholder: app/(tabs)/food.tsx, src/repositories/foodRepository.ts

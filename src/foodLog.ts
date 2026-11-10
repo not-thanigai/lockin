@@ -1,3 +1,0 @@
-import { database } from './database';
-import { uid } from './dates';
-export async function addFoodLog(food:any,amount:number,meal:string,date:string,estimated=false){const d=await database();const consumed=new Date().toISOString();const f=amount/100;await d.runAsync('INSERT INTO food_logs(id,food_id,food_name,prep_state,amount,unit,kcal,protein,carbs,fat,fibre,meal,consumed_at,local_date,estimated) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',[uid(),food.id,food.name,food.state,amount,food.unit??'g',food.kcal*f,food.protein*f,food.carbs*f,food.fat*f,(food.fibre??0)*f,meal,consumed,date,estimated?1:0]);}
