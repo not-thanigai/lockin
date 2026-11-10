@@ -24,7 +24,8 @@ Foundation implementation plus independent review/fix cycle for startup initiali
 ## Known issues and blockers
 
 - Full product remains far from the master spec's definition of done; see `CURRENT_STATE.md` and `docs/TECH_DEBT.md`.
-- GitHub remote/account connection is unavailable. The local queue and GitHub templates/workflow are prepared, but Issues/Project/PR/branch protection are not configured remotely.
+- GitHub remote is configured and both branches are pushed. Draft PR #1 is open at `https://github.com/not-thanigai/lockin/pull/1`. Its first CI attempt failed at `npm ci` because React DOM resolved to 18 while React is 19; the dependency alignment fix is prepared and awaiting a CI rerun.
+- A GitHub Projects board and branch protection are not configured. The connected GitHub tool set does not expose project-board creation; branch protection still requires repository settings access.
 - OpenCode CLI is installed, but running it in the current sandbox required redirected XDG directories; no OpenCode auth integrations were configured in the isolated check.
 - Android build, emulator and Maestro testing are not available locally.
 
@@ -32,8 +33,9 @@ Foundation implementation plus independent review/fix cycle for startup initiali
 
 1. Review and address any findings from the independent CI/testing review.
 2. Run Android emulator CI after publishing to GitHub; inspect APK, logcat, and screenshot artifacts.
-3. Configure the GitHub remote, project/issues, and branch protection; they are not configured yet.
-4. Resume `AUTH-001` onboarding only after the foundation gate. The user requested a premium onboarding/splash and Google-only sign-in; no credentials are currently configured.
+3. Verify the rerun of PR #1 workflows; investigate any native build failure.
+4. Create a GitHub Projects board and configure branch protection manually when those GitHub settings are available; issue/PR workflows remain usable in the meantime.
+5. Resume `AUTH-001` onboarding only after the foundation gate. The user requested a premium onboarding/splash and Google-only sign-in; no credentials are currently configured.
 
 ## Resume instructions
 

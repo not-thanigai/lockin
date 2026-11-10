@@ -7,7 +7,9 @@ Last updated: 2026-11-10.
 - Local Git repository: `work/lockin/`.
 - Current branch: `codex/phase01-quality`.
 - Latest commit: `030bb4f` — `Build LOCKIN local fitness tracking foundation`.
-- No GitHub remote is configured. No authenticated GitHub account/connector was available during this session. GitHub Issues, Projects, PRs, and Actions have not been created or run.
+- GitHub repository: `not-thanigai/lockin` (public), with `origin` configured. `main` and `codex/phase01-quality` are pushed; draft PR #1 is open.
+- GitHub Actions ran on PR #1 but both workflows initially failed at `npm ci` due to a React / React DOM peer mismatch. The mismatch is fixed locally by aligning React DOM to React 19; corrected workflow results are pending the next push.
+- A GitHub Projects board is not configured; the current tool connection exposes repository/issue/PR actions but no Projects creation action.
 - The current branch has uncommitted foundation fixes, repository extraction, lint/dependency changes, and docs. Do not switch or discard them.
 
 ## Completed in the application
@@ -28,7 +30,7 @@ Last updated: 2026-11-10.
 ## Latest checks
 
 - Latest local checks: TypeScript passed, full ESLint passed, Jest passed (3 suites / 11 tests), and `npx expo export --platform android` produced the Android JavaScript bundle.
-- CI workflows now define quality checks and an Android emulator build/launch smoke job; neither has run on GitHub because no remote is configured.
+- CI workflows now define quality checks and an Android emulator build/launch smoke job. The first remote run confirmed dependency installation needs the new React DOM alignment; rerun is pending.
 - Latest local export is a JS bundle, not an APK.
 - Android build is unavailable locally: Java exists, but Android SDK / `adb` / Gradle are not installed.
 - OpenCode is installed (v2.2.7). A sandboxed `opencode models` / `auth list` check saw catalog models but no authenticated integrations. Full model/provider setup needs a normal OpenCode environment.

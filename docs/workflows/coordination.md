@@ -16,7 +16,7 @@ git log -5 --oneline
 git fetch origin
 ```
 
-`git fetch origin` applies only after a remote exists. Before then, note that there is no remote and continue from local history. Never reveal credential values when inspecting provider state.
+`git fetch origin` applies now that the remote exists. Never reveal credential values when inspecting provider state.
 
 ## Claim and isolate a task
 
@@ -42,7 +42,7 @@ git fetch origin
 
 ## GitHub availability
 
-This checkout currently has no remote. GitHub Issues, Projects, PRs, Actions, and branch rules are therefore not active yet. The local queue in `TASKS.md` is authoritative until the user connects a GitHub account and a repository remote is created. The repository contains issue/PR templates and workflow definitions ready for that point.
+The repository is `not-thanigai/lockin`; `origin` tracks GitHub. Draft PR #1 carries the foundation and CI setup. GitHub Actions is active, and task Issues can be created through the connected GitHub tools. A Projects board and branch protection are not configured; the current connector exposes no Projects-board creation action, and branch protection requires repository settings access. Until a board exists, keep `TASKS.md` synchronized with issue IDs.
 
 ## Tool differences
 
