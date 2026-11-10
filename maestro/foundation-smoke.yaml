@@ -1,0 +1,37 @@
+appId: com.lockin.fitness
+---
+- launchApp:
+    clearState: true
+- assertVisible: "Today"
+- tapOn:
+    id: "tab-food"
+- assertVisible: "Food log"
+- tapOn:
+    id: "food-search"
+- inputText: "banana"
+- hideKeyboard
+- tapOn:
+    id: "food-result-banana"
+- tapOn:
+    id: "food-amount"
+- eraseText: 3
+- inputText: "50"
+- hideKeyboard
+- assertVisible: "Add 45 kcal"
+- tapOn:
+    id: "food-save"
+- assertVisible: "Banana · 50 g"
+- tapOn:
+    id: "tab-today"
+- assertVisible: "45 / 2300 kcal"
+- pressKey: Home
+- launchApp:
+    stopApp: false
+- assertVisible: "Today"
+- killApp
+- launchApp:
+    stopApp: false
+- assertVisible: "Today"
+- tapOn:
+    id: "tab-food"
+- assertVisible: "Banana · 50 g"

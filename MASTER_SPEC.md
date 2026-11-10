@@ -3952,3 +3952,346 @@ A feature is complete only when:
 The objective is to detect and fix ordinary software defects automatically before the user needs to inspect the application.
 
 The application must be tested as software and as an actual Android product, not merely as a collection of source files.
+
+# ADDITIONAL REQUIREMENT: HUMAN-LIKE ANDROID UI TESTING
+
+## 1. Objective
+
+Codex must test LOCKIN by interacting with the actual running Android application, simulating how a real person uses it.
+
+Testing must go beyond inspecting source code, running unit tests, checking TypeScript, or successfully compiling the APK.
+
+The objective is to verify that the application works correctly from the user's perspective, including navigation, interactions, visual presentation, data persistence, permissions, error handling and complete user workflows.
+
+## 2. Required Testing Environment
+
+Configure and maintain the following testing environment:
+
+- Android Studio.
+- Android SDK and Android Emulator.
+- Android Debug Bridge (ADB).
+- Maestro for end-to-end UI automation.
+- Jest for unit testing.
+- React Native Testing Library for component testing.
+- GitHub Actions for continuous integration.
+- Android Logcat for runtime diagnostics.
+
+Codex must be able to:
+
+1. Build the Android debug APK.
+2. Start and configure an Android emulator.
+3. Install the APK.
+4. Launch LOCKIN.
+5. Interact with the application through UI automation.
+6. Inspect screenshots and UI hierarchy.
+7. Read Android runtime logs.
+8. Identify failures.
+9. Fix defects.
+10. Rebuild and repeat failed tests.
+
+If the environment does not support a particular operation, Codex must report the limitation rather than claim the test was completed.
+
+## 3. Human-Like Interaction Testing
+
+Use Maestro to simulate real user interactions.
+
+Test interactions must include:
+
+- Tapping buttons and interactive elements.
+- Entering text into input fields.
+- Searching and selecting results.
+- Scrolling through lists and pages.
+- Switching between navigation tabs.
+- Opening and closing dialogs.
+- Using dropdowns and selection controls.
+- Interacting with the Android keyboard.
+- Handling system permission dialogs.
+- Navigating backwards and forwards.
+- Backgrounding and reopening the application.
+- Force-closing and relaunching the application.
+
+Use stable accessibility identifiers (`testID`) for important interactive components.
+
+Tests must interact with the actual application UI rather than directly manipulating application state to simulate success.
+
+## 4. Complete User Journey Testing
+
+Create repeatable end-to-end tests for the following workflows.
+
+### Onboarding
+- Fresh application installation.
+- First launch.
+- Welcome screen.
+- Google sign-in flow, using an appropriate test account or mocked authentication environment.
+- Profile configuration.
+- Target configuration.
+- Permission requests.
+- Completion of onboarding.
+- Returning-user launch.
+
+### Nutrition
+- Open Food.
+- Search for a food.
+- Select a result.
+- Enter quantity.
+- Save the entry.
+- Verify calculated nutrition.
+- Verify dashboard updates.
+- Edit and delete an entry.
+- Verify historical records.
+
+### Retrospective Food Logging
+- Navigate to a previous date.
+- Add meals to that date.
+- Add multiple meals.
+- Edit existing entries.
+- Copy meals between dates.
+- Verify weekly summaries.
+- Verify that missing days are not incorrectly counted as zero intake.
+
+### Recipes and Meal Planning
+- Create a recipe.
+- Add ingredients.
+- Set quantities and servings.
+- Verify nutritional calculations.
+- Save the recipe.
+- Add it to a meal plan.
+- Modify planned meals.
+- Confirm actual preparation separately from planning.
+
+### Grocery and Inventory
+- Add grocery items.
+- Edit quantities.
+- Mark items as purchased.
+- Update inventory.
+- Generate shopping lists.
+- Verify inventory deductions only occur after confirmed preparation.
+
+### Meal Preparation
+- Open the preparation checklist.
+- Complete individual tasks.
+- Verify completion states.
+- Verify recurring preparation schedules.
+
+### Workouts
+- Open a workout.
+- Start a session.
+- Record exercises, sets, repetitions and weights.
+- Use rest timers.
+- Resume an unfinished workout.
+- Complete the workout.
+- Verify workout history and personal records.
+
+### Progress
+- Enter body weight.
+- Enter measurements.
+- View progress charts.
+- Verify historical entries.
+- Verify trend calculations.
+
+### Water Tracking
+- Add water through quick-add buttons.
+- Verify daily totals.
+- Test reminder scheduling.
+- Verify reminder suppression when the target is reached.
+
+### Notifications
+- Schedule reminders.
+- Verify notification delivery.
+- Interact with notifications.
+- Snooze and reschedule reminders.
+- Verify disabled reminders do not reappear.
+- Test notification permission denial and later re-enablement.
+
+### Offline Functionality
+- Disable internet connectivity.
+- Launch LOCKIN.
+- Navigate through available features.
+- Create and edit local records.
+- Close and reopen the application.
+- Verify data persistence.
+- Restore connectivity.
+- Verify appropriate synchronisation behaviour.
+
+### Backup and Restore
+- Create a backup using a test Google account.
+- Verify backup completion.
+- Restore into a clean test installation.
+- Verify restored records.
+- Test invalid, incomplete and corrupted backup files.
+- Verify that failed restoration does not destroy existing data.
+
+### Application Recovery
+- Force-close the application.
+- Relaunch it.
+- Background and foreground the application.
+- Rotate the device where supported.
+- Test interrupted workflows.
+- Verify that saved data remains intact.
+
+## 5. Visual Inspection and Screenshot Testing
+
+Codex must inspect the actual rendered application, not just its component structure.
+
+For every major screen:
+
+- Capture screenshots.
+- Inspect layout and spacing.
+- Check text readability.
+- Check alignment and clipping.
+- Check scrolling behaviour.
+- Check dark theme consistency.
+- Check loading, empty, success and error states.
+- Check that buttons and interactive elements are visible and usable.
+
+Where practical, test different:
+
+- Android screen sizes.
+- Screen resolutions.
+- Display densities.
+- Android versions.
+- Font scaling settings.
+
+Use screenshot regression testing where practical.
+
+Do not automatically accept screenshots containing obvious visual defects merely because the UI automation passed.
+
+## 6. Android-Specific Behaviour
+
+Test Android functionality that cannot be adequately verified through ordinary component tests.
+
+Include:
+
+- Runtime permission requests.
+- Permission denial and recovery.
+- Android notification behaviour.
+- Keyboard visibility and dismissal.
+- System back-button behaviour.
+- App backgrounding and foregrounding.
+- Process termination and restoration.
+- Local database persistence.
+- Android lifecycle events.
+- Health Connect permissions and integration using appropriate test data.
+- Camera and photo permissions where implemented.
+
+## 7. Runtime Diagnostics and Evidence
+
+Every failed end-to-end test must produce diagnostic evidence where possible.
+
+Collect:
+
+- Screenshots.
+- Screen recordings for important failures where supported.
+- Maestro execution reports.
+- Android Logcat output.
+- JavaScript error logs.
+- Stack traces.
+- Relevant database state.
+- Build and test output.
+
+Codex must inspect this evidence before deciding how to fix a defect.
+
+Do not suppress errors, disable failing tests, weaken assertions or change expected results merely to obtain a passing test.
+
+## 8. Test Failure and Recovery Procedure
+
+When a test fails:
+
+1. Reproduce the failure.
+2. Identify whether it originates from the UI, application logic, database, Android platform, integration or test infrastructure.
+3. Inspect relevant logs and screenshots.
+4. Identify the underlying cause.
+5. Implement the correction.
+6. Add or update a regression test.
+7. Rebuild the application when necessary.
+8. Repeat the failed test.
+9. Run related tests to identify regressions.
+10. Record the result.
+
+A test must not be marked passed unless it has actually completed successfully.
+
+## 9. Mandatory Testing Gates
+
+For every substantial feature or development phase:
+
+- TypeScript type checking must pass.
+- Linting must pass.
+- Relevant unit tests must pass.
+- Relevant component tests must pass.
+- Relevant integration tests must pass.
+- Android build verification must pass.
+- Relevant Maestro end-to-end tests must pass.
+- Visual inspection must be performed for affected screens.
+- Runtime errors must be investigated.
+- Independent code review must be completed.
+
+If a test cannot be executed, document the exact reason and classify the feature as partially verified rather than fully verified.
+
+## 10. Definition of Done: Actual User Experience
+
+A feature is NOT complete merely because:
+
+- The code exists.
+- The screen renders.
+- TypeScript compiles.
+- The APK builds.
+- Unit tests pass.
+- A reviewer approves the implementation.
+
+A feature is complete only when:
+
+1. Its intended functionality is implemented.
+2. Its relevant automated tests pass.
+3. Its actual Android UI workflow has been tested.
+4. Its data persists correctly.
+5. Its error and empty states behave correctly.
+6. Its visual presentation has been inspected.
+7. No unresolved P0 or P1 defects remain.
+8. Independent review is complete.
+9. Test evidence and documentation are recorded.
+
+## 11. Testing Reports
+
+Maintain test reports under:
+
+`docs/testing/`
+
+Include:
+
+- `TEST_PLAN.md`
+- `E2E_TEST_COVERAGE.md`
+- `DEVICE_COMPATIBILITY.md`
+- `TEST_RESULTS.md`
+- `KNOWN_TEST_LIMITATIONS.md`
+
+For every development phase, record:
+
+- Features tested.
+- Test cases executed.
+- Tests passed.
+- Tests failed.
+- Tests skipped.
+- Known limitations.
+- Screenshots and logs.
+- Outstanding defects.
+
+Never fabricate test results or claim successful real-device testing when only emulator testing was performed.
+
+## 12. Human Testing Remains Mandatory
+
+Automated testing does not replace actual human usability testing.
+
+The developer must periodically install LOCKIN on a physical Android device and manually evaluate:
+
+- Ease of navigation.
+- Responsiveness.
+- Readability.
+- Input convenience.
+- Overall usability.
+- Battery and memory behaviour.
+- Real-world notification reliability.
+- Whether workflows make sense to an ordinary user.
+
+Record discovered usability problems and address significant issues before release.
+
+**Final principle: Codex must verify LOCKIN as a functioning Android application, not merely as a collection of successfully compiled source files.**

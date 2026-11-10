@@ -71,9 +71,9 @@ export default function FoodScreen() {
         <Text style={{ color: COLORS.muted, fontSize: 12, marginTop: 5 }}>P {Math.round(totals.protein)} g · C {Math.round(totals.carbs)} g · F {Math.round(totals.fat)} g</Text>
       </Card>
       {error ? <Text accessibilityRole="alert" style={{ color: COLORS.red, marginBottom: 10 }}>{error}</Text> : null}
-      <TextInput value={query} onChangeText={setQuery} placeholder="Search foods" placeholderTextColor={COLORS.muted} style={{ backgroundColor: COLORS.card, color: COLORS.text, padding: 14, borderRadius: 12, marginBottom: 12 }} />
+      <TextInput testID="food-search" accessibilityLabel="Search foods" value={query} onChangeText={setQuery} placeholder="Search foods" placeholderTextColor={COLORS.muted} style={{ backgroundColor: COLORS.card, color: COLORS.text, padding: 14, borderRadius: 12, marginBottom: 12 }} />
       <Text style={{ color: COLORS.muted, fontSize: 11, fontWeight: '700', letterSpacing: 1, marginVertical: 7 }}>COMMON FOODS · VALUES PER 100 G</Text>
-      {foods.map(food => <Pressable key={food.id} onPress={() => { setSelected(food); setAmount('100'); }}>
+      {foods.map(food => <Pressable key={food.id} testID={`food-result-${food.id}`} accessibilityRole="button" accessibilityLabel={`Select ${food.name}`} onPress={() => { setSelected(food); setAmount('100'); }}>
         <Card style={{ paddingVertical: 12, marginBottom: 8 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <View style={{ flex: 1 }}><Text style={{ color: COLORS.text, fontWeight: '600' }}>{food.name}</Text><Text style={{ color: COLORS.muted, fontSize: 11, marginTop: 3 }}>{food.state} · P {food.protein} g · C {food.carbs} g · F {food.fat} g</Text></View>
@@ -94,9 +94,9 @@ export default function FoodScreen() {
           <Text style={{ color: COLORS.text, fontSize: 19, fontWeight: '700' }}>{selected?.name}</Text>
           <Text style={{ color: COLORS.muted, marginTop: 3, marginBottom: 14 }}>{selected?.state} · nutrition scales from 100 g</Text>
           <Text style={labelStyle}>AMOUNT (GRAMS)</Text>
-          <TextInput keyboardType="decimal-pad" value={amount} onChangeText={setAmount} style={{ color: COLORS.text, backgroundColor: COLORS.raised, padding: 13, borderRadius: 10, marginTop: 6, marginBottom: 13 }} />
+          <TextInput testID="food-amount" accessibilityLabel="Amount in grams" keyboardType="decimal-pad" value={amount} onChangeText={setAmount} style={{ color: COLORS.text, backgroundColor: COLORS.raised, padding: 13, borderRadius: 10, marginTop: 6, marginBottom: 13 }} />
           <View style={{ flexDirection: 'row', gap: 8, marginBottom: 15 }}>{mealTypes.map(type => <Pressable key={type} onPress={() => setMeal(type)} style={{ backgroundColor: meal === type ? COLORS.green : COLORS.raised, padding: 8, borderRadius: 8 }}><Text style={{ fontSize: 11, color: meal === type ? COLORS.bg : COLORS.text }}>{type}</Text></Pressable>)}</View>
-          <Action label={`Add ${Math.round((selected?.kcal ?? 0) * Number(amount || 0) / 100)} kcal`} onPress={saveLog} />
+          <Action testID="food-save" label={`Add ${Math.round((selected?.kcal ?? 0) * Number(amount || 0) / 100)} kcal`} onPress={saveLog} />
           <Pressable onPress={() => setSelected(null)} style={{ padding: 13, alignItems: 'center' }}><Text style={{ color: COLORS.muted }}>Cancel</Text></Pressable>
         </Card>
       </View>

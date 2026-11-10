@@ -34,8 +34,8 @@ Data is stored locally in SQLite. Food entries keep a nutrition snapshot, and da
 | App | React Native, Expo SDK 58, Expo Router |
 | Language | TypeScript with strict checks |
 | Local storage | SQLite via `expo-sqlite` |
-| Unit tests | Jest and `jest-expo` |
-| Automation | GitHub Actions; Android emulator smoke workflow |
+| Tests | Jest, React Native Testing Library, Maestro |
+| CI | GitHub Actions with an Android emulator workflow |
 
 ## Get started
 
@@ -78,7 +78,7 @@ Exporting the JavaScript bundle is useful for catching bundling problems, but it
 npx expo export --platform android
 ```
 
-See [testing and verification](docs/TESTING.md) and the [latest test report](docs/testing/reports/2026-11-10-phase-01-local.md) for exact results and known gaps.
+See [testing and verification](docs/TESTING.md) and the [latest test report](docs/testing/reports/2026-11-10-human-ui-implementation.md) for exact results and known gaps.
 
 ## Roadmap
 
